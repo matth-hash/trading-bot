@@ -38,9 +38,12 @@ def detect_market_phase(data):
     rsi = compute_rsi(closes)
     macd, _ = compute_macd(closes)
 
-    if rsi[-1] > 70 and macd[-1] > 0:
+    # Accéder à la dernière valeur de la série pandas
+    last_macd = macd.iloc[-1]
+
+    if rsi[-1] > 70 and last_macd > 0:
         return "BULL"
-    elif rsi[-1] < 30 and macd[-1] < 0:
+    elif rsi[-1] < 30 and last_macd < 0:
         return "BEAR"
     else:
         return "NEUTRAL"
