@@ -3,7 +3,7 @@ import numpy as np
 
 def compute_rsi(closes, period=14):
     if len(closes) < period + 1:
-        return np.full_like(closes, 50)  # Retourne un tableau de 50 si les données sont insuffisantes
+        return np.full(len(closes), 50)  # Retourne un tableau de 50 si les données sont insuffisantes
 
     deltas = np.diff(closes)
     seed = deltas[:period+1]
@@ -30,8 +30,10 @@ def compute_rsi(closes, period=14):
     return rsi
 
 def compute_macd(closes, slow=26, fast=12, signal=9):
-    if len(closes) < slow:
-        return pd.Series(np.zeros_like(closes)), pd.Series(np.zeros_like(closes))  # Retourne des séries de zéros si les données sont insuffisantes
+    if len(closes) < max(slow, fast, signal):
+        macd = pd.Series(np.zeros(len(closes)))
+        signal_line = pd.Series(np.zeros(len(closes)))
+        return macd, signal_line  # Retourne des séries de zéros si les données sont insuffisantes
 
     ema_fast = pd.Series(closes).ewm(span=fast, adjust=False).mean()
     ema_slow = pd.Series(closes).ewm(span=slow, adjust=False).mean()
@@ -47,7 +49,10 @@ def detect_market_phase(data):
     rsi = compute_rsi(closes)
     macd, _ = compute_macd(closes)
 
-    last_macd = macd.iloc[-1]
+    if isinstance(macd, pd.Series):
+        last_macd = macd.iloc[-1]
+    else:
+        last_macd = macd[-1]
 
     if rsi[-1] > 70 and last_macd > 0:
         return "BULL"
