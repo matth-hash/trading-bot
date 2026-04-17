@@ -2,6 +2,9 @@ import pandas as pd
 import numpy as np
 
 def compute_rsi(closes, period=14):
+    if len(closes) < period + 1:
+        return np.full_like(closes, 50)  # Retourne un tableau de 50 si les données sont insuffisantes
+
     deltas = np.diff(closes)
     seed = deltas[:period+1]
     up = seed[seed >= 0].sum() / period
@@ -27,6 +30,9 @@ def compute_rsi(closes, period=14):
     return rsi
 
 def compute_macd(closes, slow=26, fast=12, signal=9):
+    if len(closes) < slow:
+        return pd.Series(np.zeros_like(closes)), pd.Series(np.zeros_like(closes))  # Retourne des séries de zéros si les données sont insuffisantes
+
     ema_fast = pd.Series(closes).ewm(span=fast, adjust=False).mean()
     ema_slow = pd.Series(closes).ewm(span=slow, adjust=False).mean()
     macd = ema_fast - ema_slow
@@ -34,11 +40,13 @@ def compute_macd(closes, slow=26, fast=12, signal=9):
     return macd, signal_line
 
 def detect_market_phase(data):
+    if len(data) < 15:  # Vérifie qu'il y a assez de données pour calculer les indicateurs
+        return "NEUTRAL"
+
     closes = data["close"].values
     rsi = compute_rsi(closes)
     macd, _ = compute_macd(closes)
 
-    # Accéder à la dernière valeur de la série pandas
     last_macd = macd.iloc[-1]
 
     if rsi[-1] > 70 and last_macd > 0:
