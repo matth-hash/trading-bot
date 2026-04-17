@@ -4,7 +4,7 @@ from core.config import SYMBOLS, BINANCE_API_KEY, BINANCE_API_SECRET
 
 BASE_URL = "https://api.binance.com/api/v3/klines"
 
-def get_klines(symbol, interval="1m", limit=50):
+def get_klines(symbol, interval="1m", limit=100):  # Augmente la limite à 100 pour avoir assez de données
     params = {
         "symbol": symbol,
         "interval": interval,
