@@ -13,9 +13,9 @@ class TradingStrategy:
         macd, _ = compute_macd(data["close"].values)
 
         if isinstance(macd, pd.Series):
-            last_macd = macd.iloc[-1]
+            last_macd = macd.iloc[-1] if len(macd) > 0 else 0
         else:
-            last_macd = macd[-1]
+            last_macd = macd[-1] if len(macd) > 0 else 0
 
         phase = detect_market_phase(data)
 
