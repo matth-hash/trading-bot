@@ -10,6 +10,9 @@ def run_scan():
     results = []
 
     for symbol, data in market_data.items():
+        if data.empty or len(data) < 15:
+            continue  # Passe à la paire suivante si les données sont insuffisantes
+
         signal = strategy.generate_signal(symbol, data)
         score = compute_score(data, macro)
         if signal != "HOLD" and score > 75:
