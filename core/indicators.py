@@ -50,9 +50,9 @@ def detect_market_phase(data):
     macd, _ = compute_macd(closes)
 
     if isinstance(macd, pd.Series):
-        last_macd = macd.iloc[-1]
+        last_macd = macd.iloc[-1] if len(macd) > 0 else 0
     else:
-        last_macd = macd[-1]
+        last_macd = macd[-1] if len(macd) > 0 else 0
 
     if rsi[-1] > 70 and last_macd > 0:
         return "BULL"
