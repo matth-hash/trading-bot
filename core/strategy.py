@@ -10,9 +10,9 @@ class TradingStrategy:
         macd, _ = compute_macd(data["close"].values)
         phase = detect_market_phase(data)
 
-        if phase == "BULL" and rsi[-1] > 70 and macd[-1] > 0:
+        if phase == "BULL" and rsi[-1] > 70 and macd.iloc[-1] > 0:
             return "BUY"
-        elif phase == "BEAR" and rsi[-1] < 30 and macd[-1] < 0:
+        elif phase == "BEAR" and rsi[-1] < 30 and macd.iloc[-1] < 0:
             return "SELL"
         else:
             return "HOLD"
