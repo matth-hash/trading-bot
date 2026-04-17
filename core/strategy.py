@@ -11,11 +11,17 @@ class TradingStrategy:
 
         rsi = compute_rsi(data["close"].values)
         macd, _ = compute_macd(data["close"].values)
+
+        if isinstance(macd, pd.Series):
+            last_macd = macd.iloc[-1]
+        else:
+            last_macd = macd[-1]
+
         phase = detect_market_phase(data)
 
-        if phase == "BULL" and rsi[-1] > 70 and macd.iloc[-1] > 0:
+        if phase == "BULL" and rsi[-1] > 70 and last_macd > 0:
             return "BUY"
-        elif phase == "BEAR" and rsi[-1] < 30 and macd.iloc[-1] < 0:
+        elif phase == "BEAR" and rsi[-1] < 30 and last_macd < 0:
             return "SELL"
         else:
             return "HOLD"
