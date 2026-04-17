@@ -8,6 +8,10 @@ async def start_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def scan_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("Lancement du scan...")
-    results = run_scan()
-    for result in results:
-        await update.message.reply_text(f"Signal: {result['symbol']} - {result['signal']} (Score: {result['score']})")
+    try:
+        results = run_scan()
+        for result in results:
+            await update.message.reply_text(f"Signal: {result['symbol']} - {result['signal']} (Score: {result['score']})")
+    except Exception as e:
+        logging.error(f"Erreur lors du scan: {e}")
+        await update.message.reply_text(f"Une erreur est survenue: {e}")
