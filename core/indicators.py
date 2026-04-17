@@ -2,14 +2,14 @@ import pandas as pd
 import numpy as np
 
 def compute_rsi(closes, period=14):
-    if len(closes) < period + 1:
-        return np.full(len(closes), 50)  # Retourne un tableau de 50 si les données sont insuffisantes
+    if not isinstance(closes, (np.ndarray, list, pd.Series)) or len(closes) < period + 1:
+        return np.full(1, 50)[0]  # Retourne une valeur par défaut si les données sont insuffisantes
 
     deltas = np.diff(closes)
     seed = deltas[:period+1]
     up = seed[seed >= 0].sum() / period
     down = -seed[seed < 0].sum() / period
-    rs = up / down
+    rs = up / down if down != 0 else 1  # Évite la division par zéro
     rsi = np.zeros_like(closes)
     rsi[:period] = 100. - 100. / (1. + rs)
 
@@ -24,39 +24,33 @@ def compute_rsi(closes, period=14):
 
         up = (up * (period - 1) + upval) / period
         down = (down * (period - 1) + downval) / period
-        rs = up / down
+        rs = up / down if down != 0 else 1
         rsi[i] = 100. - 100. / (1. + rs)
 
-    return rsi
+    return rsi[-1] if len(rsi) > 0 else 50  # Retourne la dernière valeur ou 50 par défaut
 
 def compute_macd(closes, slow=26, fast=12, signal=9):
-    if len(closes) < max(slow, fast, signal):
-        macd = pd.Series(np.zeros(len(closes)))
-        signal_line = pd.Series(np.zeros(len(closes)))
-        return macd, signal_line  # Retourne des séries de zéros si les données sont insuffisantes
+    if not isinstance(closes, (np.ndarray, list, pd.Series)) or len(closes) < max(slow, fast, signal):
+        return 0, 0  # Retourne des valeurs par défaut si les données sont insuffisantes
 
     ema_fast = pd.Series(closes).ewm(span=fast, adjust=False).mean()
     ema_slow = pd.Series(closes).ewm(span=slow, adjust=False).mean()
     macd = ema_fast - ema_slow
     signal_line = macd.ewm(span=signal, adjust=False).mean()
-    return macd, signal_line
+
+    return macd.iloc[-1] if len(macd) > 0 else 0, signal_line.iloc[-1] if len(signal_line) > 0 else 0
 
 def detect_market_phase(data):
-    if len(data) < 15:  # Vérifie qu'il y a assez de données pour calculer les indicateurs
+    if not isinstance(data, pd.DataFrame) or len(data) < 15:
         return "NEUTRAL"
 
     closes = data["close"].values
     rsi = compute_rsi(closes)
     macd, _ = compute_macd(closes)
 
-    if isinstance(macd, pd.Series):
-        last_macd = macd.iloc[-1] if len(macd) > 0 else 0
-    else:
-        last_macd = macd[-1] if len(macd) > 0 else 0
-
-    if rsi[-1] > 70 and last_macd > 0:
+    if rsi > 70 and macd > 0:
         return "BULL"
-    elif rsi[-1] < 30 and last_macd < 0:
+    elif rsi < 30 and macd < 0:
         return "BEAR"
     else:
         return "NEUTRAL"
