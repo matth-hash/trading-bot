@@ -1,12 +1,12 @@
 import requests
 import pandas as pd
-from core.config import SYMBOLS, BINANCE_API_KEY, BINANCE_API_SECRET, BYBIT_API_KEY, BYBIT_API_SECRET, MEXC_API_KEY, MEXC_API_SECRET
+from core.config import SYMBOLS
 
 # Binance API
 BINANCE_BASE_URL = "https://api.binance.com/api/v3/klines"
-# Bybit API
+# Bybit API (endpoint public)
 BYBIT_BASE_URL = "https://api.bybit.com/v2/public/kline/list"
-# MEXC API
+# MEXC API (endpoint public)
 MEXC_BASE_URL = "https://www.mexc.com/api/v3/klines"
 
 def get_klines_binance(symbol, interval="1m", limit=100):
