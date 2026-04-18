@@ -9,6 +9,9 @@ BINANCE_API_KEY = os.getenv("BINANCE_API_KEY")
 BINANCE_API_SECRET = os.getenv("BINANCE_API_SECRET")
 FRED_API_KEY = os.getenv("FRED_API_KEY")
 
+# Webhook URL
+WEBHOOK_URL = os.getenv("WEBHOOK_URL")
+
 # Trading Config
 MIN_SCORE = 75
 MAX_TRADES_PER_SCAN = 3
