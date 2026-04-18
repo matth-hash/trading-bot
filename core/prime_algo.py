@@ -10,10 +10,9 @@ def run_scan():
     results = []
 
     for symbol, data in market_data.items():
-        print(f"Traitement de {symbol} avec {len(data)} lignes de données.")
         if data.empty or len(data) < 15:
             print(f"Données insuffisantes pour {symbol}, passage à la paire suivante.")
-            continue  # Passe à la paire suivante si les données sont insuffisantes
+            continue
 
         signal = strategy.generate_signal(symbol, data)
         score = compute_score(data, macro)
