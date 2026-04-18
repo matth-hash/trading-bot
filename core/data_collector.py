@@ -16,10 +16,10 @@ def get_klines_binance(symbol, interval="1m", limit=100):
         "limit": limit
     }
     try:
-        response = requests.get(BINANCE_BASE_URL, params=params)
+        response = requests.get(BINANCE_BASE_URL, params=params, timeout=10)
         response.raise_for_status()
         data = response.json()
-    except Exception as e:
+    except requests.exceptions.RequestException as e:
         print(f"Erreur lors de la récupération des données Binance pour {symbol}: {e}")
         return pd.DataFrame(columns=["time", "close"])
 
@@ -42,10 +42,10 @@ def get_klines_bybit(symbol, interval="1", limit=100):
         "limit": limit
     }
     try:
-        response = requests.get(BYBIT_BASE_URL, params=params)
+        response = requests.get(BYBIT_BASE_URL, params=params, timeout=10)
         response.raise_for_status()
         data = response.json()["result"]
-    except Exception as e:
+    except requests.exceptions.RequestException as e:
         print(f"Erreur lors de la récupération des données Bybit pour {symbol}: {e}")
         return pd.DataFrame(columns=["time", "close"])
 
@@ -67,22 +67,19 @@ def get_klines_mexc(symbol, interval="1m", limit=100):
         "limit": limit
     }
     try:
-        response = requests.get(MEXC_BASE_URL, params=params)
+        response = requests.get("https://www.mexc.com/open/api/v2/market/kline", params=params, timeout=10)
         response.raise_for_status()
-        data = response.json()
-    except Exception as e:
+        data = response.json()["data"]
+    except requests.exceptions.RequestException as e:
         print(f"Erreur lors de la récupération des données MEXC pour {symbol}: {e}")
         return pd.DataFrame(columns=["time", "close"])
 
-    columns = ["time", "open", "high", "low", "close", "volume", "close_time",
-               "quote_asset_volume", "number_of_trades", "taker_buy_base", "taker_buy_quote", "ignore"]
-    df = pd.DataFrame(data, columns=columns)
-
+    df = pd.DataFrame(data)
     if df.empty:
         return df
 
-    df["time"] = pd.to_datetime(df["time"], unit="ms", errors='coerce')
-    df["close"] = pd.to_numeric(df["close"], errors='coerce')
+    df["time"] = pd.to_datetime(df["t"], unit="ms", errors='coerce')
+    df["close"] = pd.to_numeric(df["c"], errors='coerce')
 
     return df.dropna(subset=["close"])
 
