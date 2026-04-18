@@ -27,4 +27,12 @@ def get_klines(symbol, interval="1m", limit=100):
     df["time"] = pd.to_datetime(df["time"], unit="ms", errors='coerce')
     df["close"] = pd.to_numeric(df["close"], errors='coerce')
 
-    return df.dropna(subset=["close"])  # Supprime les lignes où "close" est NaN
+    # Supprime les lignes où "close" est NaN
+    df = df.dropna(subset=["close"])
+
+    # Vérifie que le DataFrame a au moins 15 lignes
+    if len(df) < 15:
+        print(f"Pas assez de données pour {symbol}, seulement {len(df)} lignes.")
+        return pd.DataFrame(columns=["time", "close"])
+
+    return df
