@@ -1,7 +1,7 @@
 import logging
 from telegram.ext import Application, CommandHandler
 from core.prime_handlers import start_handler, scan_handler
-from core.config import TELEGRAM_TOKEN
+from core.config import TELEGRAM_TOKEN, WEBHOOK_URL
 
 # Configuration du logging
 logging.basicConfig(
@@ -15,7 +15,12 @@ def main():
     application.add_handler(CommandHandler("start", start_handler))
     application.add_handler(CommandHandler("scan", scan_handler))
 
-    application.run_polling()
+    # Utiliser un webhook au lieu de polling
+    application.run_webhook(
+        listen="0.0.0.0",
+        port=8080,
+        webhook_url=trading-bot-production-a363.up.railway.app,
+    )
 
 if __name__ == "__main__":
     main()
