@@ -3,13 +3,13 @@ import numpy as np
 
 def compute_rsi(closes, period=14):
     if not isinstance(closes, (np.ndarray, list, pd.Series)) or len(closes) < period + 1:
-        return np.full(1, 50)[0]  # Retourne une valeur par défaut si les données sont insuffisantes
+        return 50  # Retourne une valeur par défaut si les données sont insuffisantes
 
     deltas = np.diff(closes)
     seed = deltas[:period+1]
     up = seed[seed >= 0].sum() / period
     down = -seed[seed < 0].sum() / period
-    rs = up / down if down != 0 else 1  # Évite la division par zéro
+    rs = up / down if down != 0 else 1
     rsi = np.zeros_like(closes)
     rsi[:period] = 100. - 100. / (1. + rs)
 
