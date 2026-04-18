@@ -9,13 +9,17 @@ class TradingStrategy:
         if not isinstance(data, pd.DataFrame) or len(data) < 15:
             return "HOLD"
 
-        rsi = compute_rsi(data["close"].values)
-        macd, _ = compute_macd(data["close"].values)
-        phase = detect_market_phase(data)
+        try:
+            rsi = compute_rsi(data["close"].values)
+            macd, _ = compute_macd(data["close"].values)
+            phase = detect_market_phase(data)
 
-        if phase == "BULL" and rsi > 70 and macd > 0:
-            return "BUY"
-        elif phase == "BEAR" and rsi < 30 and macd < 0:
-            return "SELL"
-        else:
+            if phase == "BULL" and rsi > 70 and macd > 0:
+                return "BUY"
+            elif phase == "BEAR" and rsi < 30 and macd < 0:
+                return "SELL"
+            else:
+                return "HOLD"
+        except Exception as e:
+            print(f"Erreur dans generate_signal pour {symbol}: {e}")
             return "HOLD"
