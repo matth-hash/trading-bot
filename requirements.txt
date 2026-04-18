@@ -1,7 +1,7 @@
+python-telegram-bot[webhooks]
 python-dotenv
 requests
 pandas
 numpy
 scikit-learn
 optuna
-python-telegram-bot
