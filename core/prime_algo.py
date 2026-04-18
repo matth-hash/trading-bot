@@ -11,6 +11,7 @@ def run_scan():
 
     for symbol, data in market_data.items():
         if data.empty or len(data) < 15:
+            print(f"Données insuffisantes pour {symbol}, passage à la paire suivante.")
             continue  # Passe à la paire suivante si les données sont insuffisantes
 
         signal = strategy.generate_signal(symbol, data)
