@@ -26,7 +26,8 @@ def get_market_data():
     market_data = {}
     for symbol in SYMBOLS:
         data = get_coingecko_data(symbol)
-        if not data.empty:
+        if not data.empty and len(data) >= 15:
+            print(f"Données récupérées pour {symbol} avec {len(data)} lignes.")
             market_data[symbol] = data
         else:
             print(f"Aucune source de données valide pour {symbol}.")
